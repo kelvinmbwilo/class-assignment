@@ -1,0 +1,25 @@
+<h1>Transactions</h1>
+<b *ngFor="let transaction of databaseTransactions">
+  {{transaction}} &nbsp;
+</b>
+
+<div style="width: 400px">
+  <table class="table table-bordered" [ngClass]="performSerializibilty(databaseTransactions, findUniqueTransactions(databaseTransactions)) == 'Not conflict serializable' ? 'green' : 'red'">
+    <tr>
+      <th *ngFor="let trans of findUniqueTransactions(databaseTransactions)">
+        T {{trans}}
+      </th>
+    </tr>
+    <tr *ngFor="let trans of databaseTransactions">
+      <td *ngFor="let t of findUniqueTransactions(databaseTransactions)">
+         <span style="letter-spacing: 5px" *ngIf="trans.indexOf(t) > -1">{{trans}}</span>
+      </td>
+    </tr>
+  </table>
+  <h2 style="color:green;" *ngIf="performSerializibilty(databaseTransactions, findUniqueTransactions(databaseTransactions)) == 'Not conflict serializable'">
+    This Transactions will be {{performSerializibilty(databaseTransactions, findUniqueTransactions(databaseTransactions))}}
+  </h2>
+  <h2 style="color: red" *ngIf="performSerializibilty(databaseTransactions, findUniqueTransactions(databaseTransactions)) == 'Conflict serializable'">
+    This Transactions will be {{performSerializibilty(databaseTransactions, findUniqueTransactions(databaseTransactions))}}
+  </h2>
+</div>

@@ -7,12 +7,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MaterialModule} from './material-module/material.module';
 import { AnimatedButtonComponent } from './animated-button/animated-button.component';
 import { GoalComponent } from './goal/goal.component';
+import { AlgorirthmComponent } from './algorirthm/algorirthm.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AnimatedButtonComponent,
-    GoalComponent
+    GoalComponent,
+    AlgorirthmComponent
   ],
   imports: [
     BrowserModule,
