@@ -1,25 +1,104 @@
-<h1>Transactions</h1>
-<b *ngFor="let transaction of databaseTransactions">
-  {{transaction}} &nbsp;
-</b>
+<div class="row">
+  <div class="col-sm-6">
+    <mat-form-field appearance="outline">
+      <mat-label>Number of Transactions</mat-label>
+      <mat-select [(ngModel)]="numberOfTransactions" multiple>
+        <mat-option value="1">1</mat-option>
+        <mat-option value="2">2</mat-option>
+        <mat-option value="3">3</mat-option>
+        <mat-option value="4">4</mat-option>
+        <mat-option value="5">5</mat-option>
+        <mat-option value="6">6</mat-option>
+        <mat-option value="7">7</mat-option>
+        <mat-option value="8">8</mat-option>
+        <mat-option value="9">9</mat-option>
+        <mat-option value="10">10</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-sm-12"></div>
+  <div class="col-sm-6" *ngIf="numberOfTransactions.length > 0" @fadeIn>
+    <mat-form-field appearance="outline">
+      <mat-label>Transactions Items</mat-label>
+      <mat-select [(ngModel)]="items" multiple>
+        <mat-option value="A">A</mat-option>
+        <mat-option value="B">B</mat-option>
+        <mat-option value="C">C</mat-option>
+        <mat-option value="D">D</mat-option>
+        <mat-option value="E">E</mat-option>
+        <mat-option value="F">F</mat-option>
+        <mat-option value="G">G</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-sm-12"></div>
+  <div class="col-sm-6" *ngIf="items.length > 0 && numberOfTransactions.length > 0" @fadeIn>
+    <div class="row">
+      <div class="col-sm-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Transaction</mat-label>
+          <mat-select [(ngModel)]="newTrans">
+            <mat-option *ngFor="let trans of numberOfTransactions" [value]="trans">{{trans}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-<div style="width: 400px">
-  <table class="table table-bordered" [ngClass]="performSerializibilty(databaseTransactions, findUniqueTransactions(databaseTransactions)) == 'Not conflict serializable' ? 'green' : 'red'">
-    <tr>
-      <th *ngFor="let trans of findUniqueTransactions(databaseTransactions)">
-        T {{trans}}
-      </th>
-    </tr>
-    <tr *ngFor="let trans of databaseTransactions">
-      <td *ngFor="let t of findUniqueTransactions(databaseTransactions)">
-         <span style="letter-spacing: 5px" *ngIf="trans.indexOf(t) > -1">{{trans}}</span>
-      </td>
-    </tr>
-  </table>
-  <h2 style="color:green;" *ngIf="performSerializibilty(databaseTransactions, findUniqueTransactions(databaseTransactions)) == 'Not conflict serializable'">
-    This Transactions will be {{performSerializibilty(databaseTransactions, findUniqueTransactions(databaseTransactions))}}
-  </h2>
-  <h2 style="color: red" *ngIf="performSerializibilty(databaseTransactions, findUniqueTransactions(databaseTransactions)) == 'Conflict serializable'">
-    This Transactions will be {{performSerializibilty(databaseTransactions, findUniqueTransactions(databaseTransactions))}}
-  </h2>
+      <div class="col-sm-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Item</mat-label>
+          <mat-select [(ngModel)]="newItems">
+            <mat-option *ngFor="let trans of items" [value]="trans">{{trans}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Operation</mat-label>
+          <mat-select [(ngModel)]="operation">
+            <mat-option value="R">Read</mat-option>
+            <mat-option value="W">Write</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-3" *ngIf="operation && newItems && newTrans">
+        <button mat-raised-button (click)="addItems()">
+          <mat-icon>add</mat-icon> Add
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+  </div>
+  <div class="col-sm-6" *ngIf="databaseTransactions.length > 0" @fadeIn>
+    <h1>Transactions</h1>
+    <b *ngFor="let transaction of databaseTransactions">
+      {{transaction}} &nbsp;
+    </b>
+
+    <table class="table table-bordered" [ngClass]="checkAcyclic(databaseTransactions).isAcyclic ? 'green' : 'black'">
+      <tr>
+        <th *ngFor="let trans of findUniqueTransactions(databaseTransactions)">
+          T {{trans}}
+        </th>
+      </tr>
+      <tr *ngFor="let trans of databaseTransactions">
+        <td *ngFor="let t of findUniqueTransactions(databaseTransactions)">
+          <span style="letter-spacing: 5px" *ngIf="trans.indexOf(t) > -1">{{trans}}</span>
+        </td>
+      </tr>
+    </table>
+
+    {{databaseTransactions | json}}
+    <h2
+      style="color:green;"
+      *ngIf="checkAcyclic(databaseTransactions).isAcyclic">
+      {{checkAcyclic(databaseTransactions).message}}
+    </h2>
+    <h2 style="color: red" *ngIf="!checkAcyclic(databaseTransactions).isAcyclic">
+      {{checkAcyclic(databaseTransactions).message}}
+    </h2>
+  </div>
+
 </div>

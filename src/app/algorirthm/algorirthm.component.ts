@@ -1,21 +1,25 @@
 import { Component, OnInit } from '@angular/core';
+import {fadeIn} from '../animations';
+import {OperationConflict} from './operation-conflict';
+import {Operation} from './operation';
 
 @Component({
   selector: 'app-algorirthm',
   templateUrl: './algorirthm.component.html',
-  styleUrls: ['./algorirthm.component.scss']
+  styleUrls: ['./algorirthm.component.scss'],
+  animations: [fadeIn]
 })
 export class AlgorirthmComponent implements OnInit {
 
-  databaseTransactions1 = [
-    'RX1',
-    'WX1',
-    'RY2',
-    'RX2',
-    'WY2',
-    'WX2',
-    'RX1',
-    'WX1',
+  databaseTransactions: string[] = [
+    // 'RX1',
+    // 'WX1',
+    // 'RY2',
+    // 'RX2',
+    // 'WY2',
+    // 'WX2',
+    // 'RX1',
+    // 'WX1',
   ];
   databaseTransactions2 = [
     'RX1',
@@ -34,7 +38,7 @@ export class AlgorirthmComponent implements OnInit {
     'WX2',
     'RX3'
   ];
-  databaseTransactions = [
+  databaseTransactions1 = [
     'RX1',
     'WX1',
     'RX1',
@@ -43,12 +47,81 @@ export class AlgorirthmComponent implements OnInit {
     'WY1',
     'RX2',
   ];
+  numberOfTransactions = [];
+  items = [];
+
+  newTrans;
+  newItems;
+  operation;
   constructor() { }
 
   ngOnInit(): void {
     this.findUniqueTransactions(this.databaseTransactions);
     this.findTransactionDataItems(this.databaseTransactions);
     this.getAllWriteTransactions(this.databaseTransactions, 'WB');
+  }
+
+  prepareOperationList(items: string[]): Operation[] {
+    return items.map(i => {
+      const action = i.substr(0, 1);
+      const transaction = i.substr(2, 1);
+      const item = i.substr(1, 1);
+      console.log({action}, {transaction}, {item});
+      return new Operation(action, transaction, item);
+    });
+  }
+
+  conflictOperation(scheduleOperationList: Operation[]): OperationConflict[] {
+    const results: OperationConflict[] = [];
+    for (let i = 0; i < scheduleOperationList.length; i++) {
+      const outerScheduleOpr: Operation = scheduleOperationList[i];
+
+      for (let j = 0; j < scheduleOperationList.length; j++) {
+        const innerScheduleOper: Operation = scheduleOperationList[j];
+        // If is the same transaction no conflict
+        if ((outerScheduleOpr.getTransaction() === innerScheduleOper.getTransaction())) {
+
+          // both are Reading, conflict to occur at least one write is required
+        } else if (outerScheduleOpr.getAction() === 'R' && innerScheduleOper.getAction() === 'R') {
+          // both are on different items, so no impact, continue
+        } else if (outerScheduleOpr.getItem() !== innerScheduleOper.getItem()) {
+        } else {
+          if (i < j) {
+            const newConflict: OperationConflict = new OperationConflict(outerScheduleOpr, innerScheduleOper);
+            if (results.indexOf(newConflict) === -1) {
+              results.push(newConflict);
+            }
+          }
+        }
+      }
+    }
+    return results;
+  }
+
+  checkAcyclic(items: string[]): any {
+    const operationList: Operation[] = this.prepareOperationList(items);
+    const message = {message: 'Is Precedence Graph Acyclic: ', isAcyclic: false};
+    const conflictsList = this.conflictOperation(operationList);
+    for (const i of conflictsList) {
+      const outerFromOper: Operation = i.getFromOperation();
+      const outerToOper: Operation = i.getToOperation();
+
+      for (const j of conflictsList) {
+        const innerFromOper: Operation = j.getFromOperation();
+        const innerToOper: Operation = j.getToOperation();
+        if (outerFromOper.equals(innerToOper) && outerToOper.equals(innerFromOper)) { // there is a cycle
+          message.message += 'No \n';
+          // tslint:disable-next-line:max-line-length
+          message.message += 'There is a cycle between transactions: T' + outerFromOper.getTransaction() + ' and T' + innerFromOper.getTransaction();
+          message.isAcyclic = false;
+          return message;
+        }
+      }
+    }
+    message.isAcyclic = true;
+    message.message += 'Yes \n';
+    message.message += 'The graph is acyclic.\n';
+    return message;
   }
 
   findUniqueTransactions(transactionData: string[]): any[] {
@@ -143,4 +216,10 @@ export class AlgorirthmComponent implements OnInit {
     return result;
   }
 
+  addItems(): any {
+    this.databaseTransactions.push(`${this.operation}${this.newItems}${this.newTrans}`);
+    this.newTrans = '';
+    this.newItems = '';
+    this.operation = '';
+  }
 }

@@ -2,6 +2,40 @@
 @import '../node_modules/bootstrap/scss/bootstrap-reboot';
 @import '../node_modules/bootstrap/scss/bootstrap-grid';
 @import '../node_modules/bootstrap/scss/bootstrap';
+@import '../node_modules/@angular/material/theming';
+@include mat-core();
 
+$tulonge-primary: mat-palette($mat-light-blue, 400);
+$tulonge-accent: mat-palette($mat-amber, 400);
+$tulonge-warn: mat-palette($mat-red);
+$tulonge-theme: mat-light-theme($tulonge-primary, $tulonge-accent, $tulonge-warn);
+@include angular-material-theme($tulonge-theme);
+
+$tulonge-web-primary: mat-palette($mat-light-blue, 800);
+$tulonge-web-accent: mat-palette($mat-amber, 400);
+
+// The warn palette is optional (defaults to red).
+$tulonge-web-warn: mat-palette($mat-red);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$tulonge-web-theme: mat-light-theme($tulonge-web-primary, $tulonge-web-accent, $tulonge-web-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($tulonge-web-theme);
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  background-color: #f5deb378;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+.mat-form-field-appearance-outline .mat-form-field-infix {
+  /* padding: 1em 0 1em 0; */
+  padding: 10px 0px 10px 0 !important;
+}
+
+
+.mat-form-field {
+  width: 100%;
+}

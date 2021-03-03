@@ -8,6 +8,7 @@ import {MaterialModule} from './material-module/material.module';
 import { AnimatedButtonComponent } from './animated-button/animated-button.component';
 import { GoalComponent } from './goal/goal.component';
 import { AlgorirthmComponent } from './algorirthm/algorirthm.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,8 @@ import { AlgorirthmComponent } from './algorirthm/algorirthm.component';
   ],
   imports: [
     BrowserModule,
+    ReactiveFormsModule,
+    FormsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MaterialModule
